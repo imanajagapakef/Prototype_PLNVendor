@@ -18,11 +18,11 @@ export default async function Login({
       <div className="rounded-lg border border-line bg-surface p-6">
         <p className="flex items-center gap-2 text-sm font-semibold">
           <PlugZap className="size-4 text-accent" aria-hidden />
-          Vendor Operations Portal
+          NEXORA
         </p>
-        <h1 className="mt-3 text-xl font-semibold">Sign in</h1>
+        <h1 className="mt-3 text-xl font-semibold">Masuk</h1>
         <p className="mt-1 text-xs text-muted">
-          DEMO WORKFLOW · use a seeded demo account
+          ALUR DEMO · gunakan akun demo yang sudah disiapkan
         </p>
         <form action={signIn} className="mt-4 space-y-3">
           <div>
@@ -41,7 +41,7 @@ export default async function Login({
           </div>
           <div>
             <label htmlFor="password" className="text-xs font-medium text-muted">
-              PASSWORD
+              KATA SANDI
             </label>
             <input
               id="password"
@@ -54,11 +54,11 @@ export default async function Login({
           </div>
           {error && (
             <p role="alert" className="text-sm text-bad">
-              Wrong email or password.
+              Email atau kata sandi salah.
             </p>
           )}
           <Button type="submit" className="w-full">
-            Sign in
+            Masuk
           </Button>
         </form>
       </div>

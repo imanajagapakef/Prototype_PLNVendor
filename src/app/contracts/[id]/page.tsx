@@ -1,10 +1,10 @@
 import { notFound, redirect } from "next/navigation";
 import { getViewer, supabaseServer } from "@/lib/supabase/server";
-import type { DocState, StageId } from "@/lib/workflow";
+import { actionLabel, roleLabel, type DocState, type StageId } from "@/lib/workflow";
 import { WorkspaceClient, type WsActivity, type WsDoc } from "@/components/workspace-client";
 
 function fmt(iso: string): string {
-  return new Date(iso).toLocaleString("en-GB", {
+  return new Date(iso).toLocaleString("id-ID", {
     day: "2-digit",
     month: "short",
     year: "numeric",
@@ -50,9 +50,9 @@ export default async function Workspace({
   const activities: WsActivity[] = (acts ?? []).map((a: Record<string, unknown>) => ({
     id: String(a.id),
     at: fmt(String(a.created_at)),
-    actor: String((a.profiles as { display_name?: string } | null)?.display_name ?? a.actor_role),
-    role: String(a.actor_role),
-    action: String(a.action) + (a.comment ? ` — ${String(a.comment)}` : ""),
+    actor: String((a.profiles as { display_name?: string } | null)?.display_name ?? roleLabel(String(a.actor_role))),
+    role: roleLabel(String(a.actor_role)),
+    action: actionLabel(String(a.action)) + (a.comment ? ` — ${String(a.comment)}` : ""),
   }));
 
   return (

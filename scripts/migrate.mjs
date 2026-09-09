@@ -24,9 +24,20 @@ const client = new pg.Client({
 await client.connect();
 
 const dir = join(root, "supabase", "migrations");
+await client.query(
+  `create table if not exists schema_migrations (name text primary key, applied_at timestamptz default now())`,
+);
+const done = new Set(
+  (await client.query(`select name from schema_migrations`)).rows.map((r) => r.name),
+);
 for (const f of readdirSync(dir).filter((f) => f.endsWith(".sql")).sort()) {
+  if (done.has(f)) {
+    console.log("skipped", f);
+    continue;
+  }
   const sql = readFileSync(join(dir, f), "utf8");
   await client.query(sql);
+  await client.query(`insert into schema_migrations (name) values ($1)`, [f]);
   console.log("applied", f);
 }
 

@@ -3,7 +3,7 @@
 import { useState, useTransition } from "react";
 import Link from "next/link";
 import { ArrowLeft, Check } from "lucide-react";
-import { OWNER_LABEL, STAGES, TRANSITIONS, availableActions, progressFor, stageIndex, type ActionType, type DocState, type StageId } from "@/lib/workflow";
+import { DOC_STATE_LABEL, OWNER_LABEL, STAGES, TRANSITIONS, availableActions, progressFor, stageIndex, type ActionType, type DocState, type StageId } from "@/lib/workflow";
 import { ActivityList } from "@/components/activity";
 import { Timeline } from "@/components/timeline";
 import { Badge, type BadgeTone } from "@/components/ui/badge";
@@ -47,11 +47,13 @@ const docTone: Record<DocState, BadgeTone> = {
 
 type Tab = "overview" | "documents" | "workflow" | "activity";
 const TABS: { id: Tab; label: string }[] = [
-  { id: "overview", label: "Overview" },
-  { id: "documents", label: "Documents" },
-  { id: "workflow", label: "Workflow" },
-  { id: "activity", label: "Activity" },
+  { id: "overview", label: "Ringkasan" },
+  { id: "documents", label: "Dokumen" },
+  { id: "workflow", label: "Alur Kerja" },
+  { id: "activity", label: "Aktivitas" },
 ];
+
+const DOC_TYPES = ["Kontrak", "RBA", "Teknis", "Persetujuan", "Material", "SPK", "Pelaksanaan", "Inspeksi", "Serah Terima", "Pendukung"];
 
 export function WorkspaceClient({
   contract,
@@ -93,10 +95,10 @@ export function WorkspaceClient({
     <main className="mx-auto w-full max-w-6xl space-y-6 px-4 py-6 sm:px-6">
       <div className="flex items-center justify-between">
         <Link href="/" className="inline-flex items-center gap-1 text-sm text-muted hover:text-ink">
-          <ArrowLeft className="size-4" aria-hidden /> Dashboard
+          <ArrowLeft className="size-4" aria-hidden /> Dasbor
         </Link>
         <form action={signOut}>
-          <Button variant="ghost" type="submit">Sign out</Button>
+          <Button variant="ghost" type="submit">Keluar</Button>
         </form>
       </div>
       {err && (
@@ -116,17 +118,17 @@ export function WorkspaceClient({
             </p>
           </div>
           <div className="text-right">
-            <p className="text-xs text-muted">Contract Value</p>
+            <p className="text-xs text-muted">Nilai Kontrak</p>
             <p className="text-xl font-semibold tabular-nums">{contract.value}</p>
           </div>
         </div>
         <div className="mt-3 flex flex-wrap items-center gap-2">
           <Badge tone={contract.paid ? "ok" : "info"}>
-            {contract.paid ? "PAID" : current.label}
+            {contract.paid ? "LUNAS" : current.label}
           </Badge>
-          <span className="text-sm tabular-nums text-muted">{progress}% complete</span>
+          <span className="text-sm tabular-nums text-muted">{progress}% selesai</span>
         </div>
-        <div role="tablist" aria-label="Contract sections" className="mt-4 flex gap-1 border-t border-line pt-3">
+        <div role="tablist" aria-label="Bagian kontrak" className="mt-4 flex gap-1 border-t border-line pt-3">
           {TABS.map((t) => (
             <button
               key={t.id}
@@ -146,24 +148,24 @@ export function WorkspaceClient({
 
       {tab === "overview" && (
         <>
-          <section aria-label="Overview" className="grid gap-6 lg:grid-cols-2">
+          <section aria-label="Ringkasan" className="grid gap-6 lg:grid-cols-2">
             <div className="rounded-lg border border-line bg-surface p-5">
-              <h2 className="text-base font-semibold">Current Responsibility</h2>
+              <h2 className="text-base font-semibold">Penanggung Jawab Saat Ini</h2>
               <p className="mt-2 text-xl font-semibold">{OWNER_LABEL[current.owner]}</p>
               <p className="text-sm text-muted">
-                {current.label} · {readyDocs} / {documents.length} documents ready
+                {current.label} · {readyDocs} / {documents.length} dokumen siap
               </p>
             </div>
             <div className="rounded-lg border border-line bg-surface p-5">
-              <h2 className="text-base font-semibold">Recent Activity</h2>
+              <h2 className="text-base font-semibold">Aktivitas Terakhir</h2>
               <div className="mt-3">
                 <ActivityList entries={activities.slice(-4).reverse()} />
               </div>
             </div>
           </section>
-          <section aria-label="Final package" className="rounded-lg border border-line bg-surface p-5">
+          <section aria-label="Paket final" className="rounded-lg border border-line bg-surface p-5">
             <h2 className="text-base font-semibold">
-              Final Contract Package — {readyDocs} / {documents.length} ready
+              Paket Dokumen Final — {readyDocs} / {documents.length} siap
             </h2>
             <ul className="mt-3 grid gap-x-6 gap-y-1.5 sm:grid-cols-2">
               {documents.map((d) => {
@@ -189,10 +191,10 @@ export function WorkspaceClient({
       )}
 
       {tab === "documents" && (
-        <section aria-label="Documents" className="space-y-6">
+        <section aria-label="Dokumen" className="space-y-6">
           <div className="rounded-lg border border-line bg-surface p-5">
             <h2 className="text-base font-semibold">
-              Documents — {readyDocs} / {documents.length} ready
+              Dokumen — {readyDocs} / {documents.length} siap
             </h2>
             <ul className="mt-3 divide-y divide-line">
               {documents.map((d) => (
@@ -203,7 +205,7 @@ export function WorkspaceClient({
                       {d.type} · {d.submittedBy} · {d.submittedAt}
                     </p>
                   </div>
-                  <Badge tone={docTone[d.state]}>{d.state.replace("_", " ")}</Badge>
+                  <Badge tone={docTone[d.state]}>{DOC_STATE_LABEL[d.state]}</Badge>
                 </li>
               ))}
             </ul>
@@ -212,21 +214,21 @@ export function WorkspaceClient({
             action={uploadAction.bind(null, contract.id)}
             className="rounded-lg border border-line bg-surface p-5"
           >
-            <h2 className="text-base font-semibold">Upload demo document</h2>
+            <h2 className="text-base font-semibold">Unggah dokumen demo</h2>
             <div className="mt-3 flex flex-wrap items-end gap-3">
               <div>
-                <label htmlFor="docType" className="text-xs font-medium text-muted">TYPE</label>
+                <label htmlFor="docType" className="text-xs font-medium text-muted">JENIS</label>
                 <select id="docType" name="docType" className="mt-1 block rounded-md border border-line bg-surface px-3 py-2 text-sm">
-                  {["Contract", "Budget Plan", "Technical", "Approval", "Material", "Work Order", "Execution", "Inspection", "Acceptance", "Supporting"].map((t) => (
+                  {DOC_TYPES.map((t) => (
                     <option key={t}>{t}</option>
                   ))}
                 </select>
               </div>
               <div>
-                <label htmlFor="file" className="text-xs font-medium text-muted">FILE (PDF/JPG/PNG, MAX 5MB)</label>
+                <label htmlFor="file" className="text-xs font-medium text-muted">FILE (PDF/JPG/PNG, MAKS 5MB)</label>
                 <input id="file" name="file" type="file" required className="mt-1 block text-sm" />
               </div>
-              <Button type="submit">Upload</Button>
+              <Button type="submit">Unggah</Button>
             </div>
           </form>
         </section>
@@ -234,14 +236,14 @@ export function WorkspaceClient({
 
       {tab === "workflow" && (
         <div className="grid gap-6 lg:grid-cols-2">
-          <section aria-label="Stages" className="rounded-lg border border-line bg-surface p-5">
-            <h2 className="text-base font-semibold">Stages</h2>
+          <section aria-label="Tahapan" className="rounded-lg border border-line bg-surface p-5">
+            <h2 className="text-base font-semibold">Tahapan</h2>
             <div className="mt-3">
               <Timeline current={contract.stage} href={`/contracts/${contract.id}`} />
             </div>
           </section>
-          <section aria-label="Stage detail" className="h-fit rounded-lg border border-line bg-surface p-5">
-            <label htmlFor="stage-select" className="text-xs font-medium text-muted">INSPECT STAGE</label>
+          <section aria-label="Detail tahap" className="h-fit rounded-lg border border-line bg-surface p-5">
+            <label htmlFor="stage-select" className="text-xs font-medium text-muted">PERIKSA TAHAP</label>
             <select
               id="stage-select"
               value={selected}
@@ -256,21 +258,21 @@ export function WorkspaceClient({
             </select>
             <h2 className="mt-4 text-lg font-semibold">{sel.label}</h2>
             <p className="text-sm text-muted">
-              Assigned to {OWNER_LABEL[sel.owner]} ·{" "}
-              {selState === "done" ? "Completed" : selState === "current" ? "In progress" : "Upcoming"}
+              Ditugaskan ke {OWNER_LABEL[sel.owner]} ·{" "}
+              {selState === "done" ? "Selesai" : selState === "current" ? "Berjalan" : "Mendatang"}
             </p>
             {selected === contract.stage ? (
               <div className="mt-4 space-y-3">
                 {actions.some(needsComment) && (
                   <div>
                     <label htmlFor="action-comment" className="text-xs font-medium text-muted">
-                      COMMENT (REQUIRED FOR REVISION / CORRECTION)
+                      KOMENTAR (WAJIB UNTUK REVISI / PERBAIKAN)
                     </label>
                     <input
                       id="action-comment"
                       value={comment}
                       onChange={(e) => setComment(e.target.value)}
-                      placeholder="e.g. RBA missing cable breakdown"
+                      placeholder="cth. RBA kurang rincian kabel"
                       className="mt-1 w-full rounded-md border border-line bg-surface px-3 py-2 text-sm"
                     />
                   </div>
@@ -283,15 +285,15 @@ export function WorkspaceClient({
                       disabled={pending || (needsComment(a) && !comment.trim())}
                       onClick={() => run(a)}
                     >
-                      {pending ? "Working…" : TRANSITIONS[a].label}
+                      {pending ? "Memproses…" : TRANSITIONS[a].label}
                     </Button>
                   ))}
                 </div>
-                {contract.paid && <Badge tone="ok">Payment recorded (demo)</Badge>}
+                {contract.paid && <Badge tone="ok">Pembayaran tercatat (demo)</Badge>}
               </div>
             ) : (
               <p className="mt-4 rounded-md bg-zinc-100 px-3 py-2 text-sm text-muted">
-                Read-only view. Actions appear only on the current stage ({current.label}).
+                Tampilan baca saja. Aksi hanya muncul pada tahap berjalan ({current.label}).
               </p>
             )}
           </section>
@@ -299,8 +301,8 @@ export function WorkspaceClient({
       )}
 
       {tab === "activity" && (
-        <section aria-label="Full history" className="rounded-lg border border-line bg-surface p-5">
-          <h2 className="text-base font-semibold">Full History ({activities.length})</h2>
+        <section aria-label="Riwayat lengkap" className="rounded-lg border border-line bg-surface p-5">
+          <h2 className="text-base font-semibold">Riwayat Lengkap ({activities.length})</h2>
           <div className="mt-3">
             <ActivityList entries={[...activities].reverse()} />
           </div>

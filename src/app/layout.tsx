@@ -15,9 +15,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Vendor Operations Portal — Demo",
+  title: "NEXORA — Demo",
   description:
-    "DEMO WORKFLOW: PLN vendor contract collaboration prototype with fictional data.",
+    "ALUR DEMO: purwarupa kolaborasi kontrak PLN dan vendor dengan data fiktif.",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
@@ -31,16 +31,17 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
           <div className="mx-auto flex h-14 w-full max-w-6xl items-center justify-between gap-3 px-4 sm:px-6">
             <p className="flex items-center gap-2 text-sm font-semibold tracking-tight">
               <PlugZap className="size-4 text-accent" aria-hidden />
-              Vendor Operations Portal
+              NEXORA
+              <span className="font-normal text-muted">Portal Operasi Vendor</span>
             </p>
-            <Badge tone="warn">DEMO WORKFLOW · Preliminary Mapping</Badge>
+            <Badge tone="warn">ALUR DEMO · Pemetaan Awal</Badge>
           </div>
         </header>
         <div className="flex-1">{children}</div>
         <footer className="border-t border-line bg-surface">
           <p className="mx-auto w-full max-w-6xl px-4 py-3 text-xs text-muted sm:px-6">
-            Prototype validation only — fictional contract, vendor, and
-            documents. No real PLN data, signatures, or financial integration.
+            Purwarupa validasi saja — kontrak, vendor, dan dokumen fiktif.
+            Tanpa data, tanda tangan, atau integrasi keuangan PLN yang asli.
           </p>
         </footer>
       </body>

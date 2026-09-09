@@ -2,7 +2,7 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { getViewer, supabaseServer } from "@/lib/supabase/server";
-import { OWNER_LABEL, STAGES, progressFor, stageIndex, type StageId } from "@/lib/workflow";
+import { OWNER_LABEL, STAGES, actionLabel, progressFor, roleLabel, stageIndex, type StageId } from "@/lib/workflow";
 import { ActivityList } from "@/components/activity";
 import { Button } from "@/components/ui/button";
 import { signOut } from "./login/actions";
@@ -16,7 +16,7 @@ const ROLE_OWNER = {
 } as const;
 
 function fmt(iso: string): string {
-  return new Date(iso).toLocaleString("en-GB", {
+  return new Date(iso).toLocaleString("id-ID", {
     day: "2-digit",
     month: "short",
     year: "numeric",
@@ -50,10 +50,10 @@ export default async function Dashboard() {
   const recent = (acts ?? []).map((a: Record<string, unknown>) => ({
     id: String(a.id),
     at: fmt(String(a.created_at)),
-    actor: String((a.profiles as { display_name?: string } | null)?.display_name ?? a.actor_role),
-    role: String(a.actor_role),
+    actor: String((a.profiles as { display_name?: string } | null)?.display_name ?? roleLabel(String(a.actor_role))),
+    role: roleLabel(String(a.actor_role)),
     action:
-      String(a.action) +
+      actionLabel(String(a.action)) +
       (a.comment ? ` — ${String(a.comment)}` : "") +
       ` (${String(a.contract_id)})`,
   }));
@@ -63,16 +63,16 @@ export default async function Dashboard() {
       <section aria-labelledby="ops-title" className="rounded-lg border border-line bg-surface p-5">
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div>
-            <p className="text-xs font-medium tracking-wide text-muted">OPERATIONS OVERVIEW</p>
+            <p className="text-xs font-medium tracking-wide text-muted">RINGKASAN OPERASIONAL</p>
             <h1 id="ops-title" className="mt-1 text-2xl font-semibold tracking-tight">
-              {list.length} Active Contracts · {vendors?.length ?? 0} Vendors
+              {list.length} Kontrak Aktif · {vendors?.length ?? 0} Vendor
             </h1>
             <p className="mt-1 text-sm text-muted">
-              Total value Rp {(total / 1e9).toLocaleString("id-ID", { maximumFractionDigits: 2 })}B · signed in as {viewer.display_name} ({viewer.role})
+              Total nilai Rp {(total / 1e9).toLocaleString("id-ID", { maximumFractionDigits: 2 })}M · masuk sebagai {viewer.display_name} ({roleLabel(viewer.role)})
             </p>
           </div>
           <form action={signOut}>
-            <Button variant="outline" type="submit">Sign out</Button>
+            <Button variant="outline" type="submit">Keluar</Button>
           </form>
         </div>
       </section>
@@ -80,7 +80,7 @@ export default async function Dashboard() {
       {actionable.length > 0 && (
         <section aria-labelledby="actions-title" className="rounded-lg border border-line border-l-4 border-l-accent bg-surface p-5">
           <h2 id="actions-title" className="text-base font-semibold">
-            {actionable.length} Action{actionable.length > 1 ? "s" : ""} Required — {OWNER_LABEL[myOwner as keyof typeof OWNER_LABEL]}
+            {actionable.length} Perlu Tindakan — {OWNER_LABEL[myOwner as keyof typeof OWNER_LABEL]}
           </h2>
           <ul className="mt-3 space-y-3">
             {actionable.map((c) => (
@@ -90,7 +90,7 @@ export default async function Dashboard() {
                   <p className="truncate text-xs text-muted">{c.project}</p>
                 </div>
                 <Link href={`/contracts/${c.id}`}>
-                  <Button>Review <ArrowRight aria-hidden /></Button>
+                  <Button>Tinjau <ArrowRight aria-hidden /></Button>
                 </Link>
               </li>
             ))}
@@ -99,7 +99,7 @@ export default async function Dashboard() {
       )}
 
       <section aria-labelledby="contracts-title" className="rounded-lg border border-line bg-surface p-5">
-        <h2 id="contracts-title" className="text-base font-semibold">Contracts</h2>
+        <h2 id="contracts-title" className="text-base font-semibold">Kontrak</h2>
         <ul className="mt-3 divide-y divide-line">
           {list.map((c) => {
             const st = c.current_stage as StageId;
@@ -112,11 +112,11 @@ export default async function Dashboard() {
                   </p>
                   <p className="truncate text-xs text-muted">
                     {STAGES[stageIndex(st)]?.label} — {OWNER_LABEL[STAGES[stageIndex(st)]?.owner ?? "PLN_PIC"]} · {progressFor(st)}%
-                    {c.paid ? " · PAID" : ""}
+                    {c.paid ? " · LUNAS" : ""}
                   </p>
                 </div>
                 <Link href={`/contracts/${c.id}`}>
-                  <Button variant="outline">Open</Button>
+                  <Button variant="outline">Buka</Button>
                 </Link>
               </li>
             );
@@ -125,7 +125,7 @@ export default async function Dashboard() {
       </section>
 
       <section aria-labelledby="activity-title" className="rounded-lg border border-line bg-surface p-5">
-        <h2 id="activity-title" className="text-base font-semibold">Recent Activity</h2>
+        <h2 id="activity-title" className="text-base font-semibold">Aktivitas Terakhir</h2>
         <div className="mt-3">
           <ActivityList entries={recent} />
         </div>

@@ -52,7 +52,7 @@ export function Timeline({ current, href }: { current: StageId; href: string }) 
               </span>
               {state === "current" && (
                 <span className="shrink-0 rounded-full bg-info-bg px-2 py-0.5 text-xs font-medium text-info">
-                  Current
+                  Saat Ini
                 </span>
               )}
             </Link>
