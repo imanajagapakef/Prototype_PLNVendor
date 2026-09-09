@@ -47,13 +47,18 @@ export default async function Workspace({
     submittedBy: String((d.profiles as { display_name?: string } | null)?.display_name ?? "—"),
     submittedAt: d.created_at ? fmt(String(d.created_at)) : "—",
   }));
-  const activities: WsActivity[] = (acts ?? []).map((a: Record<string, unknown>) => ({
-    id: String(a.id),
-    at: fmt(String(a.created_at)),
-    actor: String((a.profiles as { display_name?: string } | null)?.display_name ?? roleLabel(String(a.actor_role))),
-    role: roleLabel(String(a.actor_role)),
-    action: actionLabel(String(a.action)) + (a.comment ? ` — ${String(a.comment)}` : ""),
-  }));
+  const activities: WsActivity[] = (acts ?? []).map((a: Record<string, unknown>) => {
+    const label = actionLabel(String(a.action));
+    const comment =
+      a.comment && String(a.comment) !== label ? ` — ${String(a.comment)}` : "";
+    return {
+      id: String(a.id),
+      at: fmt(String(a.created_at)),
+      actor: String((a.profiles as { display_name?: string } | null)?.display_name ?? roleLabel(String(a.actor_role))),
+      role: roleLabel(String(a.actor_role)),
+      action: label + comment,
+    };
+  });
 
   // First-reached date per stage, derived from audit history (no extra state).
   const reached: Partial<Record<StageId, string>> = {};

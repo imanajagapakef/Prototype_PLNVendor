@@ -66,16 +66,18 @@ export default async function Dashboard() {
     const st = c.current_stage as StageId;
     return ["pln-review", "manager-approval", "inspection"].includes(st);
   }).length;
-  const recent = (acts ?? []).map((a: Record<string, unknown>) => ({
-    id: String(a.id),
-    at: fmt(String(a.created_at)),
-    actor: String((a.profiles as { display_name?: string } | null)?.display_name ?? roleLabel(String(a.actor_role))),
-    role: roleLabel(String(a.actor_role)),
-    action:
-      actionLabel(String(a.action)) +
-      (a.comment ? ` — ${String(a.comment)}` : "") +
-      ` (${String(a.contract_id)})`,
-  }));
+  const recent = (acts ?? []).map((a: Record<string, unknown>) => {
+    const label = actionLabel(String(a.action));
+    const comment =
+      a.comment && String(a.comment) !== label ? ` — ${String(a.comment)}` : "";
+    return {
+      id: String(a.id),
+      at: fmt(String(a.created_at)),
+      actor: String((a.profiles as { display_name?: string } | null)?.display_name ?? roleLabel(String(a.actor_role))),
+      role: roleLabel(String(a.actor_role)),
+      action: label + comment + ` (${String(a.contract_id)})`,
+    };
+  });
 
   return (
     <main className="mx-auto w-full max-w-6xl space-y-6 px-4 py-6 sm:px-6">
