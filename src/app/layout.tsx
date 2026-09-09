@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { PlugZap } from "lucide-react";
-import { ContractProvider } from "@/lib/store";
 import { Badge } from "@/components/ui/badge";
 import "./globals.css";
 
@@ -37,9 +36,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
             <Badge tone="warn">DEMO WORKFLOW · Preliminary Mapping</Badge>
           </div>
         </header>
-        <div className="flex-1">
-          <ContractProvider>{children}</ContractProvider>
-        </div>
+        <div className="flex-1">{children}</div>
         <footer className="border-t border-line bg-surface">
           <p className="mx-auto w-full max-w-6xl px-4 py-3 text-xs text-muted sm:px-6">
             Prototype validation only — fictional contract, vendor, and
