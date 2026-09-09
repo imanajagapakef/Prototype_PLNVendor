@@ -36,7 +36,7 @@ export default async function Workspace({
 
   const [{ data: docs }, { data: acts }] = await Promise.all([
     sb.from("documents").select("id,doc_type,file_name,storage_path,status,created_at,profiles(display_name)").eq("contract_id", id).order("created_at"),
-    sb.from("activities").select("id,actor_role,action,comment,created_at,profiles(display_name)").eq("contract_id", id).order("created_at"),
+    sb.from("activities").select("id,actor_role,action,comment,new_stage,created_at,profiles(display_name)").eq("contract_id", id).order("created_at"),
   ]);
 
   const documents: WsDoc[] = (docs ?? []).map((d: Record<string, unknown>) => ({
@@ -55,6 +55,17 @@ export default async function Workspace({
     action: actionLabel(String(a.action)) + (a.comment ? ` — ${String(a.comment)}` : ""),
   }));
 
+  // First-reached date per stage, derived from audit history (no extra state).
+  const reached: Partial<Record<StageId, string>> = {};
+  for (const a of (acts ?? []) as Record<string, unknown>[]) {
+    const st = String(a.new_stage || "") as StageId;
+    if (st && !reached[st] && a.created_at) {
+      reached[st] = new Date(String(a.created_at))
+        .toLocaleDateString("id-ID", { day: "2-digit", month: "short" })
+        .toUpperCase();
+    }
+  }
+
   return (
     <WorkspaceClient
       contract={{
@@ -68,6 +79,7 @@ export default async function Workspace({
       }}
       documents={documents}
       activities={activities}
+      reached={reached}
       err={err}
     />
   );

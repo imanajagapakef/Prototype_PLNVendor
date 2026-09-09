@@ -16,8 +16,16 @@
   --color-info: #1d4ed8;
   --color-info-bg: #dbeafe;
 
-  --font-sans: var(--font-geist-sans), system-ui, sans-serif;
-  --font-mono: var(--font-geist-mono), monospace;
+  --font-sans: var(--font-fira-sans), system-ui, sans-serif;
+  --font-mono: var(--font-fira-code), ui-monospace, monospace;
+}
+
+/* Tabular numerals for values, mono for IDs and technical metadata. */
+.tnum {
+  font-variant-numeric: tabular-nums;
+}
+.mono {
+  font-family: var(--font-mono);
 }
 
 body {

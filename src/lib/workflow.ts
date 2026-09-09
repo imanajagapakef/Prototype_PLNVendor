@@ -114,7 +114,12 @@ export const TRANSITIONS: Record<ActionType, Transition> = {
 };
 
 export function actionLabel(action: string): string {
-  return (TRANSITIONS as Record<string, Transition>)[action]?.label ?? action;
+  const t = (TRANSITIONS as Record<string, Transition>)[action]?.label;
+  if (t) return t;
+  if ((STAGES as readonly { id: string }[]).some((s) => s.id === action)) {
+    return "Kontrak dibuat";
+  }
+  return action;
 }
 
 export function stageIndex(id: StageId): number {

@@ -10,7 +10,7 @@ export function ActivityList({ entries }: { entries: ActivityEntry[] }) {
             <p className="text-xs tabular-nums text-muted">{e.at}</p>
             <p className="text-sm font-medium">{e.action}</p>
             <p className="text-xs text-muted">
-              {e.actor} · {e.role}
+              {e.actor}{e.role && e.role !== e.actor ? ` · ${e.role}` : ""}
             </p>
           </div>
         </li>

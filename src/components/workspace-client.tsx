@@ -59,11 +59,13 @@ export function WorkspaceClient({
   contract,
   documents,
   activities,
+  reached,
   err,
 }: {
   contract: WsContract;
   documents: WsDoc[];
   activities: WsActivity[];
+  reached?: Partial<Record<StageId, string>>;
   err?: string;
 }) {
   const [tab, setTab] = useState<Tab>("workflow");
@@ -239,7 +241,7 @@ export function WorkspaceClient({
           <section aria-label="Tahapan" className="rounded-lg border border-line bg-surface p-5">
             <h2 className="text-base font-semibold">Tahapan</h2>
             <div className="mt-3">
-              <Timeline current={contract.stage} href={`/contracts/${contract.id}`} />
+              <Timeline current={contract.stage} href={`/contracts/${contract.id}`} dates={reached} />
             </div>
           </section>
           <section aria-label="Detail tahap" className="h-fit rounded-lg border border-line bg-surface p-5">

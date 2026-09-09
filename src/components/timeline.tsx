@@ -4,12 +4,21 @@ import { OWNER_LABEL, STAGES, stageIndex, type StageId } from "@/lib/workflow";
 import { cn } from "@/lib/utils";
 
 // Navigation only: clicking a stage opens the workspace, never changes state.
-export function Timeline({ current, href }: { current: StageId; href: string }) {
+export function Timeline({
+  current,
+  href,
+  dates,
+}: {
+  current: StageId;
+  href: string;
+  dates?: Partial<Record<StageId, string>>;
+}) {
   const idx = stageIndex(current);
   return (
     <ol className="relative space-y-0.5">
       {STAGES.map((s, i) => {
         const state = i < idx ? "done" : i === idx ? "current" : "todo";
+        const when = dates?.[s.id];
         return (
           <li key={s.id}>
             <Link
@@ -21,7 +30,7 @@ export function Timeline({ current, href }: { current: StageId; href: string }) 
                 className={cn(
                   "flex size-6 shrink-0 items-center justify-center rounded-full border text-xs",
                   state === "done" && "border-ok bg-ok text-white",
-                  state === "current" && "border-accent bg-accent text-white",
+                  state === "current" && "border-accent bg-accent text-white ring-4 ring-accent/15",
                   state === "todo" && "border-line bg-surface text-muted",
                 )}
               >
@@ -46,8 +55,9 @@ export function Timeline({ current, href }: { current: StageId; href: string }) 
                 >
                   {String(i + 1).padStart(2, "0")} · {s.label}
                 </span>
-                <span className="block text-xs text-muted">
+                <span className="mono block text-xs text-muted">
                   {OWNER_LABEL[s.owner]}
+                  {when ? ` · ${when}` : state === "current" ? " · BERJALAN" : ""}
                 </span>
               </span>
               {state === "current" && (
@@ -61,7 +71,7 @@ export function Timeline({ current, href }: { current: StageId; href: string }) 
                 aria-hidden
                 className={cn(
                   "ml-[19px] block h-3 w-px",
-                  i < idx ? "bg-ok" : "bg-line",
+                  i < idx ? "bg-ok" : i === idx ? "bg-accent/50" : "bg-line",
                 )}
               />
             )}
