@@ -1,6 +1,6 @@
 import { notFound, redirect } from "next/navigation";
 import { getViewer, supabaseServer } from "@/lib/supabase/server";
-import { actionLabel, roleLabel, type DocState, type StageId } from "@/lib/workflow";
+import { STAGES, actionLabel, roleLabel, stageIndex, type DocState, type StageId } from "@/lib/workflow";
 import { WorkspaceClient, type WsActivity, type WsDoc } from "@/components/workspace-client";
 
 function fmt(iso: string): string {
@@ -11,6 +11,10 @@ function fmt(iso: string): string {
     hour: "2-digit",
     minute: "2-digit",
   });
+}
+
+function stageLabel(id: string): string {
+  return STAGES[stageIndex(id as StageId)]?.label ?? id;
 }
 
 export default async function Workspace({
@@ -34,10 +38,15 @@ export default async function Workspace({
     .single();
   if (!c) notFound();
 
-  const [{ data: docs }, { data: acts }] = await Promise.all([
+  const [{ data: docs, error: docsError }, { data: acts, error: actsError }] = await Promise.all([
     sb.from("documents").select("id,doc_type,file_name,storage_path,status,created_at,profiles(display_name)").eq("contract_id", id).order("created_at"),
-    sb.from("activities").select("id,actor_role,action,comment,new_stage,created_at,profiles(display_name)").eq("contract_id", id).order("created_at"),
+    sb.from("activities").select("id,actor_role,action,comment,prev_stage,new_stage,created_at,profiles(display_name)").eq("contract_id", id).order("created_at"),
   ]);
+
+  const dataError =
+    docsError || actsError
+      ? "Sebagian data kontrak gagal dimuat. Coba muat ulang halaman."
+      : null;
 
   const documents: WsDoc[] = (docs ?? []).map((d: Record<string, unknown>) => ({
     id: String(d.id),
@@ -51,12 +60,15 @@ export default async function Workspace({
     const label = actionLabel(String(a.action));
     const comment =
       a.comment && String(a.comment) !== label ? ` — ${String(a.comment)}` : "";
+    const prev = a.prev_stage ? stageLabel(String(a.prev_stage)) : null;
+    const next = a.new_stage ? stageLabel(String(a.new_stage)) : null;
     return {
       id: String(a.id),
       at: fmt(String(a.created_at)),
       actor: String((a.profiles as { display_name?: string } | null)?.display_name ?? roleLabel(String(a.actor_role))),
       role: roleLabel(String(a.actor_role)),
       action: label + comment,
+      detail: next ? (prev ? `${prev} → ${next}` : next) : undefined,
     };
   });
 
@@ -86,6 +98,8 @@ export default async function Workspace({
       activities={activities}
       reached={reached}
       err={err}
+      dataError={dataError}
+      viewerRole={viewer.role}
     />
   );
 }

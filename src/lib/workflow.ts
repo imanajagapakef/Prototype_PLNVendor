@@ -95,13 +95,13 @@ interface Transition {
 export const TRANSITIONS: Record<ActionType, Transition> = {
   "start-prep": { label: "Mulai Persiapan", from: ["contract-issued"], to: "doc-prep" },
   "submit-docs": { label: "Kirim untuk Review", from: ["doc-prep"], to: "pln-review" },
-  "approve-review": { label: "Setujui", from: ["pln-review"], to: "manager-approval" },
+  "approve-review": { label: "Setujui Review", from: ["pln-review"], to: "manager-approval" },
   "request-revision": {
     label: "Minta Revisi",
     from: ["pln-review", "manager-approval"],
     to: "doc-prep",
   },
-  "manager-approve": { label: "Setujui", from: ["manager-approval"], to: "material-request" },
+  "manager-approve": { label: "Setujui Manajer", from: ["manager-approval"], to: "material-request" },
   "request-material": { label: "Kirim Permintaan", from: ["material-request"], to: "material-handover" },
   "confirm-handover": { label: "Konfirmasi Serah Terima", from: ["material-handover"], to: "work-order" },
   "issue-wo": { label: "Terbitkan SPK", from: ["work-order"], to: "execution" },
@@ -134,4 +134,55 @@ export function availableActions(stage: StageId): ActionType[] {
   return (Object.keys(TRANSITIONS) as ActionType[]).filter((a) =>
     TRANSITIONS[a].from.includes(stage),
   );
+}
+
+export type ViewerRole =
+  | "pln_pic"
+  | "manager"
+  | "warehouse"
+  | "inspector"
+  | "vendor";
+
+// UI-only mirror of the SQL apply_transition allowlist. The server is
+// authoritative; this only decides which buttons to render.
+export function canPerform(
+  action: ActionType,
+  stage: StageId,
+  role: ViewerRole,
+): boolean {
+  switch (action) {
+    case "start-prep":
+      return stage === "contract-issued" && role === "vendor";
+    case "submit-docs":
+      return stage === "doc-prep" && role === "vendor";
+    case "approve-review":
+      return stage === "pln-review" && role === "pln_pic";
+    case "request-revision":
+      return (
+        (stage === "pln-review" && role === "pln_pic") ||
+        (stage === "manager-approval" && role === "manager")
+      );
+    case "manager-approve":
+      return stage === "manager-approval" && role === "manager";
+    case "request-material":
+      return stage === "material-request" && role === "vendor";
+    case "confirm-handover":
+      return stage === "material-handover" && role === "warehouse";
+    case "issue-wo":
+      return stage === "work-order" && role === "pln_pic";
+    case "mark-completed":
+      return stage === "execution" && role === "vendor";
+    case "pass-inspection":
+      return stage === "inspection" && role === "inspector";
+    case "request-correction":
+      return stage === "inspection" && role === "inspector";
+    case "accept-work":
+      return (
+        stage === "acceptance" && (role === "manager" || role === "pln_pic")
+      );
+    case "submit-final":
+      return stage === "final-docs" && role === "vendor";
+    case "mark-paid":
+      return stage === "payment" && role === "pln_pic";
+  }
 }

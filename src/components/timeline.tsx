@@ -1,16 +1,14 @@
-import Link from "next/link";
 import { Check } from "lucide-react";
 import { OWNER_LABEL, STAGES, stageIndex, type StageId } from "@/lib/workflow";
 import { cn } from "@/lib/utils";
 
-// Navigation only: clicking a stage opens the workspace, never changes state.
+// Read-only operational rail. Items are status, never navigation:
+// clicking a stage must not pretend to navigate or change state.
 export function Timeline({
   current,
-  href,
   dates,
 }: {
   current: StageId;
-  href: string;
   dates?: Partial<Record<StageId, string>>;
 }) {
   const idx = stageIndex(current);
@@ -20,17 +18,14 @@ export function Timeline({
         const state = i < idx ? "done" : i === idx ? "current" : "todo";
         const when = dates?.[s.id];
         return (
-          <li key={s.id}>
-            <Link
-              href={href}
-              className="group flex items-center gap-3 rounded-md px-2 py-1.5 transition-colors hover:bg-zinc-100 focus-visible:outline-2"
-            >
+          <li key={s.id} aria-current={state === "current" ? "step" : undefined}>
+            <div className="flex items-center gap-3 rounded-md px-2 py-1.5">
               <span
                 aria-hidden
                 className={cn(
                   "flex size-6 shrink-0 items-center justify-center rounded-full border text-xs",
-                  state === "done" && "border-ok bg-ok text-white",
-                  state === "current" && "border-accent bg-accent text-white ring-4 ring-accent/15",
+                  state === "done" && "border-ok bg-ok text-surface",
+                  state === "current" && "border-accent bg-accent text-surface ring-4 ring-accent/15",
                   state === "todo" && "border-line bg-surface text-muted",
                 )}
               >
@@ -40,7 +35,7 @@ export function Timeline({
                   <span
                     className={cn(
                       "size-1.5 rounded-full",
-                      state === "current" ? "animate-pulse bg-white" : "bg-zinc-300",
+                      state === "current" ? "animate-pulse bg-surface" : "bg-disabled",
                     )}
                   />
                 )}
@@ -65,7 +60,7 @@ export function Timeline({
                   Saat Ini
                 </span>
               )}
-            </Link>
+            </div>
             {i < STAGES.length - 1 && (
               <span
                 aria-hidden

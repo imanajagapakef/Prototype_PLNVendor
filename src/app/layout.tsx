@@ -34,7 +34,6 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
             <p className="flex items-center gap-2 text-sm font-semibold tracking-tight">
               <PlugZap className="size-4 text-accent" aria-hidden />
               NEXORA
-              <span className="font-normal text-muted">Portal Operasi Vendor</span>
             </p>
             <Badge tone="warn">ALUR DEMO · Pemetaan Awal</Badge>
           </div>

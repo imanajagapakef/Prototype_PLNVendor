@@ -7,10 +7,10 @@ const button = cva(
   {
     variants: {
       variant: {
-        default: "bg-accent text-white hover:bg-accent/90",
-        secondary: "bg-zinc-100 text-ink hover:bg-zinc-200",
-        outline: "border border-line bg-surface text-ink hover:bg-zinc-50",
-        ghost: "text-ink hover:bg-zinc-100",
+        default: "bg-accent text-surface hover:bg-primary-hover",
+        secondary: "bg-subtle text-ink hover:bg-line",
+        outline: "border border-line bg-surface text-ink hover:bg-hover",
+        ghost: "text-ink hover:bg-subtle",
       },
     },
     defaultVariants: { variant: "default" },

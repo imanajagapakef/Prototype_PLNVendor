@@ -8,7 +8,7 @@ const tones: Record<BadgeTone, string> = {
   warn: "bg-warn-bg text-warn",
   bad: "bg-bad-bg text-bad",
   info: "bg-info-bg text-info",
-  muted: "bg-zinc-100 text-muted",
+  muted: "bg-subtle text-muted",
 };
 
 export function Badge({
