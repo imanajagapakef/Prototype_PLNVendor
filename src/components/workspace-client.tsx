@@ -196,7 +196,7 @@ export function WorkspaceClient({
             {contract.paid && <Badge tone="ok">Pembayaran tercatat (demo)</Badge>}
           </div>
         ) : (
-          <p className="mt-4 rounded-md bg-zinc-100 px-3 py-2 text-sm text-muted">
+          <p className="mt-4 rounded-md bg-subtle px-3 py-2 text-sm text-muted">
             Tampilan baca saja untuk peran Anda ({roleLabel(viewerRole)}). Penanggung jawab tahap ini: {OWNER_LABEL[current.owner]}.
           </p>
         )}

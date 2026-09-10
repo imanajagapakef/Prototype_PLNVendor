@@ -32,34 +32,34 @@ export default async function Login({
   return (
     <main className="mx-auto flex w-full max-w-6xl flex-1 items-center px-4 py-10 sm:px-6 lg:py-14">
       <div className="grid w-full items-start gap-12 lg:grid-cols-[1.05fr_0.95fr] lg:gap-16">
-        <section aria-label="Tentang NEXORA" className="max-w-xl">
-          <p className="text-xs font-semibold uppercase tracking-[0.22em] text-muted">
+        <section aria-label="Tentang NEXORA" className="rounded-lg bg-pln-blue p-6 sm:p-8 text-white max-w-xl">
+          <p className="text-xs font-semibold uppercase tracking-[0.22em] text-pln-yellow">
             Connected Operations Platform
           </p>
           <p className="mt-3 flex items-center gap-3 text-4xl font-semibold tracking-tight sm:text-5xl">
-            <PlugZap className="size-8 text-accent sm:size-9" aria-hidden />
+            <PlugZap className="size-8 text-pln-yellow sm:size-9" aria-hidden />
             NEXORA
           </p>
-          <p className="mt-4 max-w-md text-xl font-medium tracking-tight">
+          <p className="mt-4 max-w-md text-xl font-medium tracking-tight text-white">
             Dari kontrak sampai penyelesaian.
           </p>
-          <p className="mt-2 max-w-md text-sm leading-relaxed text-muted">
+          <p className="mt-2 max-w-md text-sm leading-relaxed text-white/80">
             Satu alur operasional untuk kontrak, dokumen, persetujuan,
             material, work order, pelaksanaan, inspeksi, dan pembayaran.
           </p>
 
           <div aria-hidden="true" className="mt-10 hidden lg:block">
-            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-muted">
+            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-white/70">
               Alur NEXORA
             </p>
-            <div className="mt-4 border-l border-line pl-5">
+            <div className="mt-4 border-l border-pln-yellow/40 pl-5">
               {OPERATIONAL_STAGES.map((stage, index) => (
                 <div key={stage} className="py-0.5">
-                  <p className="text-xs font-semibold uppercase tracking-[0.16em] text-muted">
+                  <p className="text-xs font-semibold uppercase tracking-[0.16em] text-white/70">
                     {stage}
                   </p>
                   {index < OPERATIONAL_STAGES.length - 1 && (
-                    <span className="my-0.5 block h-2 w-px bg-line" />
+                    <span className="my-0.5 block h-2 w-px bg-pln-yellow" />
                   )}
                 </div>
               ))}

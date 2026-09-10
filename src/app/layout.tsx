@@ -29,10 +29,10 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       className={`${firaSans.variable} ${firaCode.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col bg-paper text-ink">
-        <header className="border-b border-line bg-surface">
+        <header className="border-b border-line bg-pln-blue">
           <div className="mx-auto flex h-14 w-full max-w-6xl items-center justify-between gap-3 px-4 sm:px-6">
-            <p className="flex items-center gap-2 text-sm font-semibold tracking-tight">
-              <PlugZap className="size-4 text-accent" aria-hidden />
+            <p className="flex items-center gap-2 text-sm font-semibold tracking-tight text-white">
+              <PlugZap className="size-4 text-pln-yellow" aria-hidden />
               NEXORA
             </p>
             <Badge tone="warn">ALUR DEMO · Pemetaan Awal</Badge>

@@ -142,18 +142,29 @@ export default async function Dashboard() {
             [`Rp ${(total / 1e9).toLocaleString("id-ID", { maximumFractionDigits: 2 })}M`, "Total nilai", "dari kontrak terlihat"],
             [`${needsDecision.length}`, "Butuh keputusan", "kontrak pada tahap keputusan"],
             [`${actionable.length}`, "Aksi saya", "tindakan yang perlu saya lakukan"],
-          ].map(([v, l, s]) => (
-            <div key={l} className="bg-surface px-4 py-3">
-              <dt className="text-xs font-medium">{l}</dt>
-              <dd className="tnum text-lg font-semibold tracking-tight">{v}</dd>
-              <dd className="text-xs text-muted">{s}</dd>
-            </div>
-          ))}
+          ].map(([v, l, s], index) => {
+            const borderClass = [
+              "border-t-pln-blue",
+              "border-t-pln-green",
+              "border-t-pln-yellow",
+              "border-t-line",
+            ][index];
+            return (
+              <div
+                key={l}
+                className={`border-t-4 ${borderClass} bg-surface px-4 py-3`}
+              >
+                <dt className="text-xs font-medium">{l}</dt>
+                <dd className="tnum text-lg font-semibold tracking-tight">{v}</dd>
+                <dd className="text-xs text-muted">{s}</dd>
+              </div>
+            );
+          })}
         </dl>
       </section>
 
       {/* Waiting on me */}
-      <section aria-labelledby="actions-title" className="rounded-lg border border-line border-l-4 border-l-warn bg-surface p-5">
+      <section aria-labelledby="actions-title" className="rounded-lg border border-line border-l-4 border-l-pln-yellow bg-surface p-5">
         <h2 id="actions-title" className="text-base font-semibold">
           Menunggu Saya — {OWNER_LABEL[myOwner as keyof typeof OWNER_LABEL]}
         </h2>
@@ -274,7 +285,7 @@ export default async function Dashboard() {
               <span
                 key={d.id}
                 style={{ width: `${(d.n / list.length) * 100}%` }}
-                className={DECISION_STAGES.includes(d.id) ? "bg-warn" : "bg-accent/70"}
+                className={DECISION_STAGES.includes(d.id) ? "bg-pln-yellow" : "bg-pln-blue"}
               />
             ))}
           </div>
